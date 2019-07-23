@@ -5,7 +5,7 @@ metadata:
 spec:
   containers:
   - name: escaper
-    image: danielsagi/kube-logs-escape
+    image: danielsagi/kube-pod-escape
     volumeMounts:
     - name: logs
       mountPath: /var/log/host
