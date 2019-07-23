@@ -35,7 +35,7 @@ def cat(path):
         return
     try:
         attach_to_root()
-        print(str(s.get(HOST_FS_BASE+path).content))
+        print(s.get(HOST_FS_BASE+path).text)
     except Exception as x: 
         print("ERROR: {}".format(x))
     finally:
