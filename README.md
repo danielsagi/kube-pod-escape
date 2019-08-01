@@ -1,8 +1,8 @@
 # Kubelet Exploit For /var/log Mount
 
-Kube-pod-escape is a POC for the an exploit on the symlink following behaviour of logs files serving in the kubelet, in addition with a pod that has a write hostPath mount to /var/log.  
+Kube-pod-escape is a POC for an exploit on the symlink following behaviour of logs files serving in the kubelet, in addition with a pod that has a write hostPath mount to /var/log.  
 This POC shows the outcome of a pod which uses that mount, and how it can escape to the host machine.  
-Further read on this discovery can be done on the following: <link_to_blog>
+Further read on this discovery can be done on the following [blog post](https://blog.aquasec.com/kubernetes-security-pod-escape-log-mounts)
 
 This repository contains all files and related code for running this exploit.  
 
