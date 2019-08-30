@@ -4,6 +4,7 @@ Kube-pod-escape is a POC for an exploit on the symlink following behaviour of lo
 This POC shows the outcome of a pod which uses that mount, and how it can escape to the host machine.  
 Further read on this discovery can be done on the following [blog post](https://blog.aquasec.com/kubernetes-security-pod-escape-log-mounts)
 
+[![asciicast](https://asciinema.org/a/260371.svg)](https://asciinema.org/a/260371?speed=2)
 This repository contains all files and related code for running this exploit.  
 
 
